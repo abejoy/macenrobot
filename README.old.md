@@ -1,2 +1,0 @@
-# macenrobot
-senior interview test

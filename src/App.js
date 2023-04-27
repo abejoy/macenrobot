@@ -1,25 +1,35 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useEffect, useRef, useState } from 'react';
+import ScorePage from './components/ScorePage';
+import { makeWebSocketCall } from './utils/webSocketUtils';
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+	const socket = useRef(null);
+	const [parsedData, setParsedData] = useState({});
+
+	useEffect(() => {
+		socket.current = makeWebSocketCall();
+		const wsocket = socket.current;
+
+		wsocket.addEventListener('message', (event) => {
+			if (event.data) {
+				const parsedData = JSON.parse(event.data);
+				setParsedData(parsedData);
+			}
+		});
+
+		return () => {
+			wsocket.close();
+		};
+	}, []);
+
+
+
+	return (
+		<ScorePage parsedData={parsedData}/>
+	);
 }
 
 export default App;
